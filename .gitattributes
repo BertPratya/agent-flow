@@ -1,0 +1,2 @@
+# Same line endings on Windows, macOS, and Linux.
+*.md text eol=lf
