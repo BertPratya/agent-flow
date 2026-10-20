@@ -79,14 +79,15 @@ Known gaps (chosen in setup; revisit when possible):
 ### Git policy
 
 <!-- - Base branch: `main`
-     - Slice branch: `slice/NNNN-<name>` from `main` (or from another slice's branch when stacked), worktree `.worktrees/NNNN-<name>/`
-     - Task branch: `task/NNNN-NN` from the newest slice branch, worktree `.worktrees/task-NNNN-NN/`
-     - Update branch: `update/NNNN` from the newest slice branch, worktree `.worktrees/update-NNNN/`
+     - Slice branch: `slice/<name>` from `main`, worktree `.worktrees/<name>/`
+     - Task branch: `task/<name>-NN` from the newest slice branch, worktree `.worktrees/task-<name>-NN/`
+     - Update branch: `update/<name>` from the newest slice branch, worktree `.worktrees/update-<name>/`
      - Small changes: `fix/<short-name>` from `main`
-     - After the human approves the result: who merges, and whether to push
+     - After the human approves the result: who merges (with a merge commit, `git merge --no-ff`), and whether to push
+     - Approval tags travel with every push: `git config push.followTags true` once per clone
      - Slices update from `main` before the integration review, and again just before merging
      - Parallel slices: merge one at a time
-     - Commits: the lead commits after every step: `NNNN: <what happened>`, task work `NNNN/NN: <summary>` -->
+     - Commits: the lead commits after every step: `<name>: <what happened>`, task work `<name>/NN: <summary>` -->
 
 ### Other rules
 

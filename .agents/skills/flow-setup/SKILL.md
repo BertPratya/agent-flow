@@ -73,8 +73,8 @@ own. A rule that needs a command (a screenshot script, a lint rule) is
 tried once, like "How to start". If the command writes files (screenshots,
 reports), add their folder to `.gitignore`, and say in the rule where the
 reviewer finds them.
-For task splitting, show the defaults in `flow-plan` step 7 and ask which to
-change; write only the changes.
+For task splitting, show the rules in `templates/tasks.md` and ask which to
+add or change; write only the changes.
 
 Done when: you can fill `AGENTS.md` sections 8-10 without guessing.
 
@@ -87,12 +87,18 @@ Do what the human chose, in this order. Skip what is already ok.
    - the text between `<!-- agent-flow:start … -->` and `<!-- agent-flow:end -->`
      into this repo's `AGENTS.md`. If the markers exist, replace only what is
      between them. If not, add the block at the top and sections 8-10 below it.
-   - `workflow/` (templates, roles, formats, adapters, `VERSION`)
-   - `.agents/skills/`
+   - `workflow/` (the guide, roles, adapters, `VERSION`)
+   - `templates/`
+   - `.agents/skills/flow-setup/`, and for Claude Code the link
+     `.claude/skills/flow-setup` → `../../.agents/skills/flow-setup`
+
+   When updating from an older version, remove the files the new version
+   no longer has (e.g. `workflow/templates/`, `workflow/formats/`, and the
+   skills other than `flow-setup`).
 
    Never copy the source's sections 8-10, and never touch this repo's
    sections 8-10 when updating.
-2. **`AGENTS.md` sections 8-10**, from `workflow/templates/project.md`:
+2. **`AGENTS.md` sections 8-10**, from `.agents/skills/flow-setup/project.md`:
    project, stack profile (parts with their folders, connections, tools per
    role with how to start each one, setup commands, always allowed files,
    auto-fix commands, checks with tiers, run locally, test dependencies, known gaps), and
@@ -102,15 +108,16 @@ Do what the human chose, in this order. Skip what is already ok.
 4. **Hooks and CI:** a pre-commit hook runs the auto-fix commands and the
    task checks; Stop hooks run the task checks, where the tool supports them;
    a CI job runs the task checks. A CI change needs the human's OK.
-5. **Repo basics:** `slices/`, `backlog.md`, `.gitattributes`
-   (`*.md text eol=lf` and `*.patch text eol=lf`), and `.gitignore` with
-   `.worktrees/`. On Windows: `git config core.longpaths true`, since
+5. **Repo basics:** `slices/`, `backlog.md` (from `templates/backlog.md`),
+   `.gitattributes` (`*.md text eol=lf`), and `.gitignore` with
+   `.worktrees/`. `git config push.followTags true`, so the approval tags
+   travel with every push. On Windows: `git config core.longpaths true`, since
    folders like `node_modules` inside `.worktrees/` pass the 260-character limit.
 6. **Known gaps:** every skipped item, with its effect on the workflow,
    who chose it, and the date.
 7. **Gaps that need code changes:** for each one the human chose to fix,
    add one line to `backlog.md`: the goal, "from setup", and the date.
-   It becomes a slice when someone starts it with `flow-spec`.
+   It becomes a slice when someone starts it (`workflow/guide.md`).
 
 Commit on its own branch, as the git policy says, so the human can review it.
 

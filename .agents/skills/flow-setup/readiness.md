@@ -22,9 +22,9 @@ Levels:
 
 | Item | Level | If not ok |
 |---|---|---|
-| `AGENTS.md` block, `workflow/`, `.agents/skills/` | required | Copy them from the source. |
-| Same version as the source (`workflow/VERSION`) | recommended | Update the block, `workflow/`, and skills. Sections 8-10 stay. If skipped: newer rules and fixes are missing. |
-| `AGENTS.md` sections 8-10 filled, from `workflow/templates/project.md` | required | Fill them (steps 3-4). |
+| `AGENTS.md` block, `workflow/`, `templates/`, `.agents/skills/flow-setup/` | required | Copy them from the source. |
+| Same version as the source (`workflow/VERSION`) | recommended | Update the block, `workflow/`, `templates/`, and the setup skill; remove files the new version no longer has. Sections 8-10 stay. If skipped: newer rules and fixes are missing. |
+| `AGENTS.md` sections 8-10 filled, from `.agents/skills/flow-setup/project.md` | required | Fill them (steps 3-4). |
 
 ## Checks
 
@@ -32,7 +32,7 @@ Levels:
 |---|---|---|
 | Every part has checks for format, lint, types (where the language has them), test, build | recommended | 1. Use the existing tool (Makefile, package script). 2. Add a standard tool: a new dependency, so the human must agree. 3. Skip: reviewers look for those mistakes by hand, which is less reliable. |
 | Auto-fix commands for every formatter and linter that can fix (e.g. `gofmt -w`, `eslint --fix`, `prettier --write`) | recommended | Add them to the stack profile. They run before the checks. If skipped: workers fix formatting by hand, and checks fail more often. |
-| Checks pass on the base branch | required | Parts that do not exist yet are skipped (`workflow/formats/lifecycle.md` → Checks). Otherwise the human fixes it, as a small change or a slice. Slices cannot start on a failing base: every task would fail for reasons it did not cause. |
+| Checks pass on the base branch | required | Parts that do not exist yet are skipped: a part with no code yet has no checks to run. Otherwise the human fixes it, as a small change or a slice. Slices cannot start on a failing base: every task would fail for reasons it did not cause. |
 | Checks are safe to run at the same time in two worktrees: free ports, unique container names, own temp folders | recommended | Fix the checks. Test it by running the task checks in two worktrees at once. If skipped: tasks run in parallel, but the lead runs the full checks one task at a time, so workers may still see random failures from each other. |
 | Slow tests (end-to-end, browser) are in the `slice` tier | recommended | Move them. If skipped: every task waits for them. |
 
