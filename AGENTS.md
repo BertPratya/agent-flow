@@ -1,6 +1,6 @@
 # AGENTS.md
 
-<!-- agent-flow:start v0.3.0 -->
+<!-- agent-flow:start v0.3.1 -->
 <!-- Reusable workflow block. Same in every repo. Do not edit per project. -->
 
 ## 1. How we work
@@ -34,11 +34,11 @@ slices/<name>/
   notes.md       technical ideas from the spec talk, optional, not approved
 ```
 
-Templates: `templates/`. Each template's comments hold its rules; read the template before writing or changing a document.
+Templates: `workflow/templates/`. Each template's comments hold its rules; read the template before writing or changing a document.
 
 Every approval is an annotated git tag, e.g. `approval/<name>/spec/R001`, holding the approval record.
 
-Ideas for later go to `backlog.md` at the project root when a slice is done (`templates/backlog.md`).
+Ideas for later go to `backlog.md` at the project root when a slice is done (`workflow/templates/backlog.md`).
 
 Contracts, the data model, and other living docs stay at the project level (see section 9). A slice edits them on its own branch and lists them under `touches` in `plan.md`. The human approves the slice's change to them, not the whole file.
 
@@ -83,7 +83,7 @@ Stop, mark the task (for a plan or integration review: the slice) `blocked`, and
 
 ## 6. Status
 
-- **Read:** the slice's `status.md`. It is the overview and the state of the whole slice: what needs the human, documents, tasks, findings, preview results, and the log. Format and the meaning of each status word: `templates/status.md`.
+- **Read:** the slice's `status.md`. It is the overview and the state of the whole slice: what needs the human, documents, tasks, findings, preview results, and the log. Format and the meaning of each status word: `workflow/templates/status.md`.
 - **Write:** only the lead, after every step: `status.md` with a Log line, and a commit.
 - **Checks:** a task moves to review or done only after the checks pass (section 9: the auto-fix commands, then the checks). Only a full run counts, not single tests.
 
@@ -93,7 +93,7 @@ Stop, mark the task (for a plan or integration review: the slice) `blocked`, and
 |---|---|
 | `workflow/guide.md` | the lead's steps for every phase |
 | `workflow/roles/` | what each role does |
-| `templates/` | one template per document; its comments hold the document's rules |
+| `workflow/templates/` | one template per document; its comments hold the document's rules |
 | `workflow/adapters/` | how each agent tool finds the roles |
 | `workflow/VERSION` | the agent-flow version |
 | `.agents/skills/flow-setup/` | setting up or updating the workflow in a repo |
@@ -112,7 +112,7 @@ We build agent-flow using its own workflow.
 
 | Part | Folder | Tech |
 |---|---|---|
-| Workflow files | `AGENTS.md`, `workflow/`, `templates/`, `.agents/skills/` | Markdown |
+| Workflow files | `AGENTS.md`, `workflow/`, `.agents/skills/` | Markdown |
 
 Tools per role (the lead is the tool you chat in):
 

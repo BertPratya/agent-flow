@@ -63,8 +63,8 @@ based_on: { spec: {{spec revision, e.g. R001}} }
      - One task is one reviewable commit: about an hour of work, or a
        few hundred lines. Bigger? Split it into two tasks.
      - Keep each brief short. The lead builds every brief while it checks
-       the plan, and warns when one is over a set size (about 1,500
-       words by default). Then split the task, or trim what it follows.
+       the plan, and notes any brief over about 1,500 words. Then split
+       the task, or trim what it follows.
 
      Changing tasks:
      - Task ids are two digits: 01, 02, ... Before the first approval,
@@ -72,8 +72,9 @@ based_on: { spec: {{spec revision, e.g. R001}} }
        reuse an id: a removed task leaves its number unused, and a new
        task goes at the end with the next free number. The order of work
        comes from depends_on, not from the order in this file.
-     - To add, remove, or rename tasks, edit this file. There is nothing
-       else to update.
+     - Before the first approval, add, remove, or rename tasks by editing
+       this file and the Tasks table in status.md. After it, only fix
+       tasks and a wider touches may change; see the workflow guide.
 
      Filling the template:
      - Replace every {{...}} with real text.
@@ -253,7 +254,9 @@ risk: {{core, normal, or low}}
      The lead also runs all project checks before the task is handed in,
      so don't list them here. The lead checks that each test named here exists
      in a file inside the task's touches, and, where the project's test
-     tool reports test names, that it ran and passed.
+     tool reports test names, that it ran and passed. A test in the
+     slice tier (e.g. a slow e2e test) runs at integration, not with
+     the task.
 
      Existing tests must keep passing. Change an existing test only when
      this task changes what it tests, and list its file under Files.

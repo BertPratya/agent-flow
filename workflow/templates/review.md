@@ -145,7 +145,7 @@ reviewer: {{reviewer}}
      - Breaks: what it breaks: a requirement (R5), a decision (SD1,
        TD2), a task's Interfaces (task 02), or a project rule (name it).
        A decision without a number: name the document and section,
-       e.g. docs/design.md 2.3.
+       e.g. the project document and section where it is written.
        The work adds behavior nothing asks for? Write: scope, and what
        it adds, e.g. Breaks: scope: adds --color, which no requirement
        asks for. A scope finding is at least medium: the plan never adds

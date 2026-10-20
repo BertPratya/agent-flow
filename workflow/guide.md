@@ -3,13 +3,15 @@
 The lead's steps for every phase of a slice. The lead keeps the state,
 checks the documents against their templates, builds each worker's brief,
 and creates the approval tags. The documents follow the templates in
-`templates/`.
+`workflow/templates/`.
 
 This guide is for the lead. The other roles have their own files in
 `workflow/roles/`.
 
 ## Once per clone
 
+- Git 2.36 or newer (`git --version`). Older git prints wrong paths for
+  `git rev-parse --path-format=absolute` without an error.
 - `git config push.followTags true`, so a plain push also sends the
   approval tags.
 - If setup added a hooks folder, turn it on, e.g. `git config core.hooksPath .githooks`.
@@ -20,7 +22,8 @@ A slice is one feature, on its own branch, in its own folder.
 
 - **Name:** the slice name only, e.g. `due-dates`. Lowercase letters,
   digits, and hyphens. A name is never used again, even after a slice is
-  cancelled.
+  cancelled. Not allowed, because helper folders use them: `base-check`,
+  `briefs`, `messages`, and names starting with `task-` or `update-`.
 - **Branch:** `slice/<name>`, from the base branch (also when stacked).
 - **Worktree:** `<repo root>/.worktrees/<name>/`. `<repo root>` is the main
   checkout's folder: `git rev-parse --path-format=absolute --git-common-dir`,
@@ -39,18 +42,22 @@ slices/<name>/
   notes.md      optional: technical ideas from the spec talk; not approved
 ```
 
-**Templates:** `templates/` holds one template per document. Each
+**Templates:** `workflow/templates/` holds one template per document. Each
 template's comments hold its rules. Before you write or change a document,
 read its template again: a filled document no longer has the comments.
 
 ## Status and commits
 
-- `status.md` follows `templates/status.md`. Only the lead changes it, and
+- `status.md` follows `workflow/templates/status.md`. Only the lead changes it, and
   only in the slice worktree, on the slice branch. It is the only place
   where status lives: never in a document's header.
 - After every step that changes something: update `status.md`, add a Log
   line (time in UTC), and commit.
 - Commit messages: `<name>: <what happened>`. Task work: `<name>/NN: <summary>`.
+- A commit message that holds quoted words (the human's, a worker's notes)
+  is written to a file under `<repo root>/.worktrees/messages/` and
+  committed with `git commit -F <file>`: quotes and `$` would change on the
+  command line.
 - **Phase changes**, each with a Log line:
 
 | Phase | Set when |
@@ -80,8 +87,8 @@ read its template again: a filled document no longer has the comments.
    slice needs one of them, it waits for it: `status.md` gets an `After:`
    line. The human confirms.
 3. **Create it:** `git worktree add <repo root>/.worktrees/<name> -b slice/<name> <base branch>`.
-   In that worktree: `slices/<name>/spec.md` from `templates/spec.md` (fill
-   `slice`, `title`, `created`), and `status.md` from `templates/status.md`
+   In that worktree: `slices/<name>/spec.md` from `workflow/templates/spec.md` (fill
+   `slice`, `title`, `created`), and `status.md` from `workflow/templates/status.md`
    (phase `spec`). Commit: `<name>: new slice`.
 
 ## 2. Spec
@@ -108,7 +115,7 @@ read its template again: a filled document no longer has the comments.
    1. `status.md`: spec `approved`, revision `R<next>` (R001, R002, ...).
       Commit: `<name>: spec R<next> approved ("<the human's words>")`.
    2. Tag that commit (see Approval tags): `approval/<name>/spec/R<next>`.
-   3. Create `preview.md` from `templates/preview.md`, with its fixed
+   3. Create `preview.md` from `workflow/templates/preview.md`, with its fixed
       checks: one for the first scenario of each story that is not removed,
       one per `manual` requirement, one per success criterion. Phase
       `plan`. Commit.
@@ -154,7 +161,7 @@ read its template again: a filled document no longer has the comments.
 uncommitted changes; a stacked slice's earlier slice is merged, and this
 slice is updated from the base branch (as in 5.1); and the base checks
 pass: `git worktree add --detach <repo root>/.worktrees/base-check <base branch>`,
-run the setup commands and the checks there (`AGENTS.md` section 9), then
+run the setup commands and all checks there, task and slice tier (`AGENTS.md` section 9), then
 `git worktree remove` it. Never use the main checkout: it is the human's.
 
 **Run the tasks.** A task can start when every task in its `depends_on` is
@@ -167,10 +174,10 @@ when the first one starts. For each task:
    worktree; if the folder is gone, run `git worktree prune`, then
    `git worktree add <repo root>/.worktrees/task-<name>-NN task/<name>-NN`.
    Run the setup commands there (`AGENTS.md` section 9).
-2. **Brief:** write the task's brief to a file under `<repo root>/.worktrees/`
+2. **Brief:** write the task's brief to `<repo root>/.worktrees/briefs/<name>-NN.md`
    (see Briefs).
 3. **Worker:** start it in a fresh context, as `AGENTS.md` section 9 says,
-   with this prompt (write it to a file, never as one quoted argument:
+   with this prompt (write it to a file under `<repo root>/.worktrees/briefs/`, never as one quoted argument:
    test output holds quotes and `$`):
 
        You are the worker. Read workflow/roles/worker.md and follow it.
@@ -188,7 +195,8 @@ when the first one starts. For each task:
    finding marked wontfix, or deferred without naming a later task, blocks
    the task until the human decides.
 4. **Checks**, in the task worktree: the auto-fix commands, then the
-   checks (`AGENTS.md` section 9). Each failed run adds 1 to attempt;
+   task-tier checks (`AGENTS.md` section 9). Slice-tier checks run at
+   integration. Each failed run adds 1 to attempt;
    start a new worker with the last 40 lines. After 3 failures since the
    last review, the task is blocked. Attempt goes back to 0 after a review
    or an unblock.
@@ -207,16 +215,18 @@ when the first one starts. For each task:
    1. In the task worktree: `git merge slice/<name>`, to bring in the tasks
       merged meanwhile. On a conflict, leave the merge in progress and
       start a worker with the merge-conflict line; then `git add` the files
-      and commit. A conflict in a file from the plan's `touches` is yours:
-      resolve it, and the human approves that change.
-   2. Run the checks again in the task worktree. On a failure, a worker
+      and commit, and add a Log line naming the merge commit (the
+      integration review checks it). A conflict in a file from the plan's
+      `touches` is yours: resolve it, and the human approves that change.
+   2. Run the task-tier checks again in the task worktree. On a failure, a worker
       fixes it with the checks-failed line (within `touches`); commit, and
       run the checks again.
    3. In the slice worktree: `git merge --ff-only task/<name>-NN`.
    4. Stop anything running in the task worktree and leave the folder (on
-      Windows, an open process locks it). Then
+      Windows, an open process locks it). Then, in the slice worktree:
       `git worktree remove <repo root>/.worktrees/task-<name>-NN` and
-      `git branch -d task/<name>-NN`. The task is `done`.
+      `git branch -d task/<name>-NN` (it only counts as merged from the
+      slice branch). The task is `done`.
 
    While 8.1 to 8.3 run, you may edit `status.md`, but don't commit it;
    commit it after 8.3. If `--ff-only` is refused because the slice branch
@@ -246,16 +256,16 @@ When every task is done or cancelled, set the phase to `integration`.
    1. `git worktree add <repo root>/.worktrees/update-<name> -b update/<name> slice/<name>`.
    2. There: `git merge <base branch>`. On a conflict, leave the merge in
       progress and start a worker in the update worktree with only the
-      merge-conflict line (there is no brief); then `git add` and commit. A
-      conflict in a file from the plan's `touches` is yours, and the human
-      approves that change.
-   3. There: run the setup commands and the checks. On a failure: if the
+      merge-conflict line (there is no brief); then `git add` and commit,
+      with a Log line naming the merge commit. A conflict in a file from
+      the plan's `touches` is yours, and the human approves that change.
+   3. There: run the setup commands and all checks, task and slice tier. On a failure: if the
       merge brought changes in, a worker fixes it with the checks-failed
       line, then commit and check again; if it brought nothing in, the
       slice itself is broken: remove the update worktree and its branch
       (`git branch -D update/<name>`), and add a fix task.
-   4. In the slice worktree: `git merge --ff-only update/<name>`. Remove
-      the update worktree and branch. As in 4.8, don't commit `status.md`
+   4. In the slice worktree: `git merge --ff-only update/<name>`. Then,
+      still there, remove the update worktree and branch. As in 4.8, don't commit `status.md`
       during 5.1.1 to 5.1.4.
 2. **Integration review:** a review of kind `integration`. Each high or
    medium finding becomes a fix task (see "Changes to an approved
@@ -282,7 +292,7 @@ Only after the human approves the result:
 1. Record the approval: a Log line with their words.
 2. Update from the base branch again, as in 5.1. If anything came in, the
    integration review runs again (step 5.2), and the human previews again.
-3. Copy into `backlog.md`, by `templates/backlog.md`: the plan's Parked
+3. Copy into `backlog.md`, by `workflow/templates/backlog.md`: the plan's Parked
    items, the spec's Out of scope items marked `Goes to: the backlog`, and
    every finding deferred out of the slice (its title). Each item is one
    line, ending with its source and the date.
@@ -313,7 +323,7 @@ never from memory:
 Every approval is an annotated tag on the commit that records it. The tag's
 message is the approval record: what was approved, the revision, the date,
 who, and the human's own words. Write the message to a file under
-`<repo root>/.worktrees/`, never as a quoted argument (quotes and `$` in
+`<repo root>/.worktrees/messages/`, never as a quoted argument (quotes and `$` in
 the words would change), then:
 
     git tag -a approval/<name>/<doc>/R<next> -F <message file>
@@ -329,7 +339,7 @@ the words would change), then:
 | `task` | a `core` or `normal` task passed its checks | code reviewer | the task id and its commits |
 | `integration` | every task is done or cancelled | code reviewer | the slice |
 
-1. **The file:** in `slices/<name>/reviews/`, from `templates/review.md`:
+1. **The file:** in `slices/<name>/reviews/`, from `workflow/templates/review.md`:
    `spec-R001-<round>.md`, `plan-R001-<round>.md`, `task-NN-<round>.md`, or
    `integration-<round>.md`. A task review's commits go only in the front
    matter's `target`.
@@ -393,7 +403,7 @@ Only when the human agrees. Then:
    "(removed in R…: why)"; a replaced decision stays, marked replaced.
 3. **The plan follows the spec:** if the spec changed, the plan becomes
    `changed` too. New scenarios, `manual` requirements, or success criteria
-   get new preview checks (`templates/preview.md`). For tasks:
+   get new preview checks (`workflow/templates/preview.md`). For tasks:
    - `done` tasks stay done; a problem in their code becomes a fix task
    - a task no longer needed: `cancelled` in `status.md`, with a Log line;
      remove its worktree, and keep its branch (as Cancel does)

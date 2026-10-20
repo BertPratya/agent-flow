@@ -26,7 +26,7 @@ Tools per role (the lead is the tool you chat in):
 
 | Role | Tool | How to start |
 |---|---|---|
-<!-- | Worker | Codex | `Get-Content <prompt file> | codex exec -C <worktree> --sandbox workspace-write -` |
+<!-- | Worker | Codex | `codex exec -C <worktree> --sandbox workspace-write - < <prompt file>` (bash, zsh); in PowerShell 7: `Get-Content -Encoding UTF8 <prompt file> | codex exec -C <worktree> --sandbox workspace-write -` (in Windows PowerShell 5.1, first set `$OutputEncoding = [System.Text.Encoding]::UTF8`) |
      | Code reviewer | Claude Code | subagent `flow-code-reviewer` |
      | Plan reviewer | Claude Code | subagent `flow-plan-reviewer` |
      The prompt goes in a file, never as one quoted argument.

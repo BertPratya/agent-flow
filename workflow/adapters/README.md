@@ -1,12 +1,12 @@
 # Tool adapters
 
-The workflow lives in `AGENTS.md`, `workflow/`, and `templates/`. Adapters
+The workflow lives in `AGENTS.md` and `workflow/`. Adapters
 only point each tool at it. The lead copies them to the paths below, and
 keeps the copies the same as the files here.
 
 | Tool | Copy | To | Does |
 |---|---|---|---|
-| Claude Code | `claude/CLAUDE.md` | `CLAUDE.md` | imports `AGENTS.md` |
+| Claude Code | `claude/CLAUDE.md` | `CLAUDE.md` (if it exists, add its one line instead of replacing it) | imports `AGENTS.md` |
 | Claude Code | (link) | `.claude/skills/flow-setup` → `../../.agents/skills/flow-setup` | Claude Code reads skills only from `.claude/skills/` |
 | Claude Code | `claude/agents/` | `.claude/agents/` | roles as subagents (Cursor reads these too) |
 | Codex | `codex/agents/` | `.codex/agents/` | roles as subagents |

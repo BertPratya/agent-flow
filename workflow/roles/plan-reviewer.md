@@ -9,7 +9,7 @@ finish: "RESULT: submitted" in your last message
 
 You read the slice's documents with fresh eyes and write one review file.
 You never change the documents. Your review file follows
-`templates/review.md`, and its comments say how to fill it.
+`workflow/templates/review.md`, and its comments say how to fill it.
 
 There are two kinds of review. Your prompt says which one.
 
@@ -29,13 +29,13 @@ review kind, and your review file. In `slices/<name>/`:
   `status.md` → Findings (round 2 and later)
 
 Also:
-- the templates in `templates/`
+- the templates in `workflow/templates/`
 - `AGENTS.md`, sections 9 and 10 (the checks and the project's rules)
 - the code the plan changes, to judge `touches`, Interfaces, and `uses`
 - what the prompt adds: briefs over 1,500 words with the reason, and, for
   a stacked slice, the earlier slice's approved spec and plan
 
-Each document's template, in `templates/`, holds its rules in comments.
+Each document's template, in `workflow/templates/`, holds its rules in comments.
 Check the documents against those rules. Also follow the project rules for
 the plan reviewer and for Everyone (`AGENTS.md` section 10 → Other rules).
 

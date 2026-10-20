@@ -73,7 +73,7 @@ own. A rule that needs a command (a screenshot script, a lint rule) is
 tried once, like "How to start". If the command writes files (screenshots,
 reports), add their folder to `.gitignore`, and say in the rule where the
 reviewer finds them.
-For task splitting, show the rules in `templates/tasks.md` and ask which to
+For task splitting, show the rules in `workflow/templates/tasks.md` and ask which to
 add or change; write only the changes.
 
 Done when: you can fill `AGENTS.md` sections 8-10 without guessing.
@@ -87,17 +87,27 @@ Do what the human chose, in this order. Skip what is already ok.
    - the text between `<!-- agent-flow:start … -->` and `<!-- agent-flow:end -->`
      into this repo's `AGENTS.md`. If the markers exist, replace only what is
      between them. If not, add the block at the top and sections 8-10 below it.
-   - `workflow/` (the guide, roles, adapters, `VERSION`)
-   - `templates/`
+   - `workflow/` (the guide, roles, templates, adapters, `VERSION`)
    - `.agents/skills/flow-setup/`, and for Claude Code the link
      `.claude/skills/flow-setup` → `../../.agents/skills/flow-setup`
 
-   When updating from an older version, remove the files the new version
-   no longer has (e.g. `workflow/templates/`, `workflow/formats/`, and the
-   skills other than `flow-setup`).
+   When updating from an older version: `workflow/` belongs to agent-flow
+   alone, so replace it with the source's. Outside `workflow/`, remove
+   only what an older agent-flow version installed and this one no longer
+   has, never the project's own files:
+   - the skills `flow-spec`, `flow-plan`, `flow-implement`, and
+     `flow-review` in `.agents/skills/`, and their links in
+     `.claude/skills/`
+   - older adapter files, if present: `.codex/rules/flow.rules`,
+     `.cursor/hooks.json`, `.cursor/hooks/flow-guard.mjs`, and agent-flow's
+     entries in `.claude/settings.json`. Show each one to the human first:
+     the team may have changed it.
+   Ask the human about any file that is unclear.
 
-   Never copy the source's sections 8-10, and never touch this repo's
-   sections 8-10 when updating.
+   Never copy the source's sections 8-10. When updating, list each line in
+   this repo's sections 8-10 that names a removed file or an old rule
+   (e.g. a removed skill, or numbered slice names), propose the new
+   wording, and change only the lines the human approves.
 2. **`AGENTS.md` sections 8-10**, from `.agents/skills/flow-setup/project.md`:
    project, stack profile (parts with their folders, connections, tools per
    role with how to start each one, setup commands, always allowed files,
@@ -105,10 +115,12 @@ Do what the human chose, in this order. Skip what is already ok.
    project rules: the git policy, and the other rules as "<role>, <when>: <rule>",
    or "(none)".
 3. **Tool adapters** for the tools the team uses, as `workflow/adapters/README.md` says.
+   If `CLAUDE.md` already exists, add the line `@AGENTS.md` to it; never
+   replace it.
 4. **Hooks and CI:** a pre-commit hook runs the auto-fix commands and the
    task checks; Stop hooks run the task checks, where the tool supports them;
    a CI job runs the task checks. A CI change needs the human's OK.
-5. **Repo basics:** `slices/`, `backlog.md` (from `templates/backlog.md`),
+5. **Repo basics:** `slices/.gitkeep` (git keeps no empty folder), `backlog.md` (from `workflow/templates/backlog.md`),
    `.gitattributes` (`*.md text eol=lf`), and `.gitignore` with
    `.worktrees/`. `git config push.followTags true`, so the approval tags
    travel with every push. On Windows: `git config core.longpaths true`, since

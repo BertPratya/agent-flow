@@ -13,17 +13,19 @@ Levels:
 | Item | Level | If not ok |
 |---|---|---|
 | Git repository with a base branch | required | Create it, or the human names the base branch. |
+| Git 2.36 or newer (`git --version`) | required | Update git. Older git prints wrong paths for `git rev-parse --path-format=absolute` without an error, so every worktree path goes wrong. |
+| No slice in progress from an older agent-flow version (when updating) | required | Finish or cancel those slices with the old version first, then update. The new version can't continue a slice in the old format. |
 | `git config user.name` and `user.email` set | required | The human sets them. Approvals and commits need a name. |
 | A remote | recommended | Add one. If skipped: no push, no CI, slices merge locally only. |
-| `slices/`, `backlog.md`, `.gitattributes`, and `.worktrees/` in `.gitignore` | required | Create them. `.worktrees/` holds the slice, task, and update worktrees. |
+| `slices/` (with `.gitkeep`), `backlog.md`, `.gitattributes`, and `.worktrees/` in `.gitignore` | required | Create them. `.worktrees/` holds the slice, task, and update worktrees. |
 | Test runners and linters skip `.worktrees/` | recommended | Add `.worktrees/` to their ignore settings. The `go` command skips it already; `gofmt -l .` does not. If skipped: running them in the main checkout also runs the copies in every worktree. |
 
 ## Workflow files
 
 | Item | Level | If not ok |
 |---|---|---|
-| `AGENTS.md` block, `workflow/`, `templates/`, `.agents/skills/flow-setup/` | required | Copy them from the source. |
-| Same version as the source (`workflow/VERSION`) | recommended | Update the block, `workflow/`, `templates/`, and the setup skill; remove files the new version no longer has. Sections 8-10 stay. If skipped: newer rules and fixes are missing. |
+| `AGENTS.md` block, `workflow/`, `.agents/skills/flow-setup/` | required | Copy them from the source. |
+| Same version as the source (`workflow/VERSION`) | recommended | Update the block, `workflow/`, and the setup skill, and remove the older version's files as setup step 4.1 says (never the project's own). Sections 8-10 stay. If skipped: newer rules and fixes are missing. |
 | `AGENTS.md` sections 8-10 filled, from `.agents/skills/flow-setup/project.md` | required | Fill them (steps 3-4). |
 
 ## Checks
